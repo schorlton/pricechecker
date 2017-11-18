@@ -1,10 +1,13 @@
 from google.appengine.api import mail
 from bs4 import BeautifulSoup
 import requests
+from requests_toolbelt.adapters import appengine
 import webapp2
 
 from formdata import FORM_DATA
 from contact import EMAIL_SENDER, EMAIL_RECIPIENT
+
+appengine.monkeypatch()
 
 def send_price_alert(price):
     # mail.send_mail(
