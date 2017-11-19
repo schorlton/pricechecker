@@ -30,15 +30,22 @@ class PriceCheck(webapp2.RequestHandler):
                 {
                     'departure':3,
                     'arrival':2,
-                    'month':11,
-                    'day':19,
+                    'month':12,
+                    'day':15,
+                    'year':2017
+                },
+                {
+                    'departure':2,
+                    'arrival':3,
+                    'month':12,
+                    'day':18,
                     'year':2017
                 }
             ]
 
 
         for search in searches:
-            r = requests.post('https://bookings.blueskybooking.com/Booking.aspx?Company_ID=54', headers=headers, data=FORM_DATA.format(departure=search['departure'], arrival=search['arrival'], month=search['month'], day=search['day'], year=search['year']))
+            r = requests.post('https://bookings.blueskybooking.com/Booking.aspx?Company_ID=54', headers=headers, data=FORM_DATA.format(**search))
             soup = BeautifulSoup(r.text.encode('utf-8'), 'html.parser')
             price_as = soup.find_all('a', {'class': 'ui-link-global-schedules-dialog-fare'})
             prices = []
