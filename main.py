@@ -18,6 +18,7 @@ def send_price_alert(price):
     )
     # print('would have sent price alert for {}'.format(price))
 
+# Location 3=Vic, location 2=Van
 class PriceCheck(webapp2.RequestHandler):
     def get(self):
         headers = {
@@ -25,15 +26,27 @@ class PriceCheck(webapp2.RequestHandler):
             'Accept': 'text/html',
             'Cookie': 'ASP.NET_SessionId=umrvj4t0np4c01rt14lcpxz0; CookieValidation=yes'
         }
-        r = requests.post('https://bookings.blueskybooking.com/Booking.aspx?Company_ID=54', headers=headers, data=FORM_DATA)
-        soup = BeautifulSoup(r.text.encode('utf-8'), 'html.parser')
-        price_as = soup.find_all('a', {'class': 'ui-link-global-schedules-dialog-fare'})
-        prices = []
-        for price_a in price_as:
-            prices.append(float(price_a.find('span').text[1:]))
-        min_price = min(prices)
-        if min_price < 200:
-            send_price_alert(min_price)
+        searches= [
+                {
+                    'departure':3,
+                    'arrival':2,
+                    'month':11,
+                    'day':19,
+                    'year':2017
+                }
+            ]
+
+
+        for search in searches:
+            r = requests.post('https://bookings.blueskybooking.com/Booking.aspx?Company_ID=54', headers=headers, data=FORM_DATA.format(departure=search['departure'], arrival=search['arrival'], month=search['month'], day=search['day'], year=search['year']))
+            soup = BeautifulSoup(r.text.encode('utf-8'), 'html.parser')
+            price_as = soup.find_all('a', {'class': 'ui-link-global-schedules-dialog-fare'})
+            prices = []
+            for price_a in price_as:
+                prices.append(float(price_a.find('span').text[1:]))
+            min_price = min(prices)
+            if min_price < 200:
+                send_price_alert(min_price)
 
 app = webapp2.WSGIApplication([
     ('/pricecheck', PriceCheck),
